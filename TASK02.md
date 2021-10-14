@@ -72,7 +72,73 @@ SELECT column1, column2, column3,...<br>
 
 # 学习内容
 学习了SQL基础查询与排序，大的框架一般为<br>
-SELECT 某列<br>,
+SELECT 某列<br>
   FROM 某表<br>
  WHERE 条件表达式<br>
-算术运算符和比较运算符与其他的语言相近，故不做多余的解释。逻辑运算符中的复杂逻辑运算可以阅读离散数学中的相关内容
+算术运算符和比较运算符与其他的语言相近，故不做多余的解释。逻辑运算符中的复杂逻辑运算可以阅读离散数学中的相关内容<br>
+聚合查询的函数有(COUNT; SUM; AVG; MAX; MIN)五种<br>
+使用的方法写在SELECT 函数之后，<br>
+SELECT SUM(purchase_price), AVG(sale_price) <br>
+  FROM product; <br>
+groupby与pandas中的类似，需要注意使用时的书写顺序<br>
+SELECT-FROM-WHERE-GROUP BY <br>
+HAVING语句用于对分组进行过滤，可以使用数字，聚合函数和groupby中指定的列名<br>
+ORDERBY语句可以对查询结果进行排序，默认为升序，降序排列为DESC <br>
+FROM-WHERE-GROUPLE BY-HAVING-SELECT-ORDER BY 这个使用顺序导致了ORDER BY中可以使用别名，因为ORDERBY在SELECT语句之后
+
+# 练习题
+## 2.1
+SELECT product_name, regist_date <br>
+  FROM product<br>
+ WHERE regist_date > '2009-04-28'
+## 2.2 
+a.返回所有买入价为空的单元格<br>
+b.返回所有买入价不为空的单元格<br>
+c.返回商品名不为空的单元格
+## 2.3
+```
+SELECT product_name, sale_price, purchase_price
+  FROM product
+ WHERE sale_price - 500 >= purchase_price
+```
+或者
+```
+SELECT product_name, sale_price, purchase_price
+  FROM product
+ WHERE sale_price >= purchase_price + 500
+```
+## 2.4
+```
+SELECT product_name, product_type,
+       sale_price * 0.9 - purchase_price AS profit
+  FROM product
+ WHERE sale_price * 0.9 - purchase_price > 100
+   AND (product_type = '办公用品' OR product_type = '厨房用具')；
+```
+## 2.5
+name是字符串没有SUM操作<br>
+WHERE应该在GROUPBY之前<br>
+GROUPBY字段和SELECT字段不同
+## 2.6
+```
+SELECT product_type, SUM(sale_price), SUM(purchase_price)
+  FROM product
+ GROUP BY product_type
+HAVING SUM(sale_price) > 1.5 * SUM(purchase_price);
+```
+## 2.7
+```
+ORDER BY regist_date DESC, sale_price;
+```
+
+# 思考与总结
+通过TASK1与TASK2的学习，基本掌握了SQL的基础操作CREAT,DROP,ALTER,SELECT,INSERT,UPDATE,DELETE<br>
+需要注意DML的执行顺序为FROM-WHERE-GROUPBY-HAVING-SELECT-ORDERBY,所以ORDERBY可以使用SELECT中设置的别名，GROUPBY不可以。
+还有一点需要注意的是SQL的逻辑运算比较特别，再真假之外有第三种逻辑UNKNOW。<br>
+NULL并不代表着空值,
+空值没有长度而NULL有长度；NULL的判断要依靠IS NULL或者IS NOT NULL；用COUNT的时候NULL会被忽略但是空值会被统计
+
+
+
+
+ 

@@ -55,19 +55,68 @@ SELECT product_type, product_name, sale_price
   GROUP BY product_type);
 ```
 # 各种各样的函数
+给出一个输入值，按照预的程序定义给出返回值，输入值称为参数。
 ## 算数函数
+* ABS（数值）：绝对值
+* MOD（被除数，除数）：求余数
+* ROUND（对象数值，保留小数的位数）：四舍五入
 ## 字符串函数
+* 拼接函数：CONCAT（str1,str2,str3）
+* 返回字符串长度：LENGTH（字符串）
+* 全小写转换：LOWER（字符串）
+* 字符串替换：REPLACE（对象字符串，替换前的字符串，替换后的字符串）
+* 字符串的截取：SUBSTRING（对象字符串FROM截取前的位置FOR截取的字符数）
+* SUBSTRING_INDEX（原始字符串，分隔符，n）<br>
+该函数用来获取原始字符串按照分隔符分割，第n个分隔符之前（或之后）的子字符串，支持正向和反向索引，索引起始值分别为1和-1。
 ## 日期函数
+* CURRENT_DATE - 获取当前日期
+* CURRENT_TIME - 当前时间
+* CURRENT_TIMESTAMP - 当前日期和时间
+* EXTRACT - 截取日期元素
 ## 转换函数
+* 类型转换：CAST（转换前的值 AS 想要转换的数据类型）
+* COALESCE（数据1，数据2，数据3...）<br>
+该函数会返回数据中左侧开始第1个不是NULL的值
 # 谓词
+返回值为真值的函数。主要有(LIKE, BETWEEN, IS NULL, IS NOT NULL, IN, EXISTS)
 ## LIKE谓词
+LIKE代表匹配查询，例子，比如通过%ddd来查询末尾为ddd的字符串，或者是_ddd%来查询开头第一个字符任意第二个到第四个为ddd结尾为任意的字符串。<br>
+_ 代表匹配一个字符串，%代表匹配任意字符串
 ## BETWEEN谓词
+用使BETWEEN可以进行范围查询。内部含三个参数 <br>
+```
+WHERE sale_price BETWEEN 100 AND 1000
+```
+BETWEEN的范围是闭区间
+## IS NULL IS NOT NULL
+用于选取出某些值为NULL的列的数据，而想要选取NULL以外的数据时，需要使用IS NOT NULL。
 ## IN谓词
+```
+WHERE purchase_price IN (320,500,5000);
+```
+反之，希望取出进货价不是320，500，5000的时候可以用NOT IN
 ## 使用子查询作为IN谓词的参数
+* 实际生活中，某个门店的在售商品是不断变化的，使用in谓词就需要经常更新SQL语句，降低了效率，提高了维护成本；
+* 实际上，某个门店的在售商品可能有成百上千个，手工维护在售商品编号过于复杂
+使用子查询可保持sql语句不变，极大提高了程序的可维护性
 ## EXIST 谓词
+EXIST只关心记录是否存在，因此返回哪些列都没有关系。EXIST只会判断是否存在满足子查询中WHERE字句制定的条件。
 # CASE表达式
+条件分支
 ## 什么是CASE表达式
+```
+CASE WHEN<求值表达式>THEN<表达式>
+     WHEN<求值表达式>THEN<表达式>
+     WHEN<求值表达式>THEN<表达式>
+     .
+     .
+     .
+```
+当有WHEN的情况时，表达THEN
 ## CASE表达式的使用方法
+* 根据不同分支得到不同列值
+* 实现列方向上的聚合
+* 实现行转列
 
 # 学习内容
 * 创建一个基于单表的视图
@@ -101,7 +150,56 @@ UPDATE productsum
    SET sale_price = '5000'
  WHERE product_type = '办公用品';
 ```
+* 字符串函数的运用
+```
+SELECT 
+    str1, str2, str3,
+    CONCAT(str1,str2,str3) AS str_concat,
+    LENGTH(str1) AS len_str,
+    LOWER(str1) AS LOW_str,
+    REPLACE(str1,str2,str3) AS rep_str,
+    SUBSTRING(str1 FROM 3 FOR 2) AS sub_str
+FROM
+    samplestr;
+```
+* EXIST的用例
+```
+WHERE EXISTS （SELECT *
+                FROM shopproduct AS sp
+               WHERE sp.shop_id = ‘000C’
+                 AND sp.shop.product_id = p.product_id）；
+```
+就像EXISTS可以用来替换IN一样，NOT IN也可以用NOT EXIST来替换
+* 根据不同分支得到不同列
+```
+SELECT product_name,
+       CASE WHEN product_type = '衣服' THEN CONCAT('A:',product_type)
+            WHEN product_type = '办公用品' THEN CONCAT('B:',product_type)
+            WHEN product_type = '厨房用具' THEN CONCAT('C:',product_type)
+            ELSE NULL
+       END AS abc_product_type
+  FROM product;
+```
+* 实现列方向上的聚合
+```
+SELECT SUM(CASE WHEN product_type = '衣服'THEN sale_price ELSE 0 END) AS sum_price_clothes,
+       SUM(CASE WHEN product_type = '厨房用具'THEN sale_price ELSE 0 END) AS sum_price_kitchen,
+       SUM(CASE WHEN product_type = '办公用品'THEN sale_price ELSE 0 END) AS sum_price_office
+  FROM product;
+```
+* 实现行转列
+```
+SELECT name,
+       SUM(CASE WHEN subject='语文' THEN score ELSE null END) as chinese,
+       SUM(CASE WHEN subject='数学' THEN score ELSE null END) as math,
+       SUM(CASE WHEN subject='外语' THEN score ELSE null END) as english
+  FROM score
+ GROUP BY name;
+```
 
 
 
 
+
+
+阿斯顿

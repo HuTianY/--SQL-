@@ -197,9 +197,48 @@ SELECT name,
  GROUP BY name;
 ```
 
+# Question
+## 3.1
+```
+CREAT VIEW ViewPractice5_1
+AS
+SELECT product_name, sale_price, regist_date
+  FROM product
+ WHERE sale_price >= 1000
+   AND regist_date = '2009-09-20';
+```
+## 3.2
+报错
 
+## 3.3
+```
+SELECT product_id, product_name, product_type, sale_price,
+       (SELECT AVG(sale_price) FROM product) AS sale_price_all
+  FROM product;
+```  
+## 3.4
+```
+CREATE VIEW AvgPriceByType AS
+SELECT product_id, product_name, product_type, sale_price,
+       (SELECT AVG(sale_price)
+          FROM product AS p2
+         WHERE p1.product_id = p2.product_id
+         GROUP BY p1.product_type) AS avg_sale_price
+ FROM product AS p1;
+```
+## 3.5
+运算或者函数中含有NULL时，结果全都会变为NULL？ ---正确
 
+## 3.6
+a.取出了买入价不为500，2800，5000的产品的产品名和买入价两列
+b.NOT IN的查询中不能有NULL，所以不返回记录
 
-
-
-阿斯顿
+## 3.7
+SELECT SUM(CASE WHEN sale_price < 1000 THEN 1 ELSE 0 END) AS low_price,
+       SUM(CASE WHEN sale_price BETWEEN 1001 AND 3000 THEN 1 ELSE 0 END) AS mid_price,
+       SUM(CASE WHEN sale_price > 3000 THEN 1 ELSE 0 END) AS high_price
+  FROM product;
+  
+# 学习总结
+本章学习了较多内容，主要是视图，子查询以及函数运算和CASE表达式。其中需要注意，改变视图同样会改变原表。子查询的层数尽量不要过于太多导致可读性下降。
+CASE表达式是条件分支，使用CASE表达式可以快速得到不同条件表达式下的数据。需要勤加练习掌握。

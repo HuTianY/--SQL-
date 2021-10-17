@@ -1,3 +1,4 @@
+本笔记为阿里云天池龙珠计划SQL训练营的学习内容，链接为：https://tianchi.aliyun.com/specials/promotion/aicampsql；
 
 # 视图
 ## 3.1.1什么是视图
@@ -234,11 +235,13 @@ a.取出了买入价不为500，2800，5000的产品的产品名和买入价两�
 b.NOT IN的查询中不能有NULL，所以不返回记录
 
 ## 3.7
+```
 SELECT SUM(CASE WHEN sale_price < 1000 THEN 1 ELSE 0 END) AS low_price,
        SUM(CASE WHEN sale_price BETWEEN 1001 AND 3000 THEN 1 ELSE 0 END) AS mid_price,
        SUM(CASE WHEN sale_price > 3000 THEN 1 ELSE 0 END) AS high_price
   FROM product;
-  
+```
+
 # 学习总结
 本章学习了较多内容，主要是视图，子查询以及函数运算和CASE表达式。其中需要注意，改变视图同样会改变原表。子查询的层数尽量不要过于太多导致可读性下降。
 CASE表达式是条件分支，使用CASE表达式可以快速得到不同条件表达式下的数据。需要勤加练习掌握。
